@@ -1,0 +1,36 @@
+- name: Deploy runners
+  hosts: runners
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Install k3s
+      ansible.builtin.shell: |
+        curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Install Helm
+      ansible.builtin.shell: |
+        curl -sfL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      args:
+        creates: /usr/local/bin/helm
+
+    - name: Deploy ARC Controller
+      kubernetes.core.helm:
+        name: "arc"
+        chart_ref: "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller"
+        release_namespace: "arc-systems"
+        create_namespace: true
+        kubeconfig: "/etc/rancher/k3s/k3s.yaml"
+        wait: true
+
+    - name: Deploy Runner Scale Set
+      kubernetes.core.helm:
+        name: "arc-runner-set"
+        chart_ref: "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set"
+        release_namespace: "arc-runners"
+        create_namespace: true
+        values: "{{ lookup('template', 'runner-set-values.yaml.j2') | from_yaml }}"
+        kubeconfig: "/etc/rancher/k3s/k3s.yaml"
+        wait: true

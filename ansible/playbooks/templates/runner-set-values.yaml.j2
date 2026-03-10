@@ -1,0 +1,29 @@
+# vi: ft=yaml
+
+githubConfigSecret:
+  github_token: {{ github_token | quote }}
+githubConfigUrl: {{ github_config_url | quote }}
+
+minRunners: 0
+maxRunners: {{ max_runners }}
+
+runnerScaleSetName: {{ runner_scale_set_name | quote }}
+runnerGroup: {{ runner_group | quote }}
+
+template:
+  spec:
+    containers:
+      - name: runner
+        image: {{ runner_image }}
+        command: ["/home/runner/run.sh"]
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+            ephemeral-storage: "4Gi"
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+            ephemeral-storage: "4Gi"
+        securityContext:
+          allowPrivilegeEscalation: false

@@ -1,0 +1,46 @@
+- name: Deploy bot
+  hosts: bot
+  become: true
+  gather_facts: true
+
+  vars:
+    container_image: "{{ bot_image }}"
+    data_dir: "/opt/itmogus/data"
+    google_creds_path: "{{ data_dir }}/credentials.json"
+    container_env:
+      BOT_TOKEN: "{{ telegram_token }}"
+      GOOGLE_CREDENTIALS_PATH: "/data/credentials.json"
+      OWNER_IDS: "{{ owner_ids }}"
+      USERS_TABLE_ID: "{{ users_table_id }}"
+      GITHUB_TOKEN: "{{ github_token }}"
+      GITHUB_ORG: "{{ github_org }}"
+    pip_install_packages:
+      - name: docker
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+
+  tasks:
+    - name: Create data dir
+      ansible.builtin.file:
+        path: "{{ data_dir }}"
+        state: directory
+        mode: "0700"
+
+    - name: Write service account credentials
+      ansible.builtin.copy:
+        content: "{{ google_sa_credentials }}"
+        dest: "{{ google_creds_path }}"
+        mode: "0600"
+
+    - name: Deploy container
+      community.docker.docker_container:
+        name: telegram_bot
+        image: "{{ container_image }}"
+        state: started
+        restart_policy: always
+        pull: true
+        env: "{{ container_env }}"
+        volumes:
+          - "{{ data_dir }}:/data"

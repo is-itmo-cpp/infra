@@ -1,0 +1,7 @@
+inventory.yaml
+secrets.yaml
+credentials.json
+node_modules/
+dist/
+__pycache__/
+*.pyc

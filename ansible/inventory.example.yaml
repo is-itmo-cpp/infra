@@ -1,0 +1,30 @@
+all:
+  vars:
+    github_org: "is-itmo-c-2X"
+    ansible_user: itmo
+
+runners:
+  vars:
+    runner_image: ghcr.io/is-itmo-cpp/runner:latest
+    runner_scale_set_name: "itmogus"
+    github_config_url: "https://github.com/{{ github_org }}"
+
+  hosts:
+    vm-itmo-ci-primary-1:
+      ansible_host: 1.2.3.4
+      max_runners: 2  # VMs should have 1.5vCPU + 2GB per runner
+      runner_group: "Primary-1"
+
+    vm-itmo-ci-backup-1:
+      ansible_host: 5.6.7.8
+      max_runners: 2  # VMs should have 1.5vCPU + 2GB per runner
+      runner_group: "Backup-1"
+
+bot:
+  vars:
+    bot_image: ghcr.io/your_org/itmogus-bot:latest
+    owner_ids: "123456789,987654321"
+
+  hosts:
+    vm-itmo-bot-1:
+      ansible_host: 9.10.11.12

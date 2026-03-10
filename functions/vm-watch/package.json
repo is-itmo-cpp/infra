@@ -1,0 +1,10 @@
+{
+  "name": "vm-watch",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@yandex-cloud/nodejs-sdk": "latest",
+    "cron-parser": "^5.4.0"
+  }
+}
