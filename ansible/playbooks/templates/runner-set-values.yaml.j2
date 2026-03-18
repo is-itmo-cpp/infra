@@ -16,6 +16,9 @@ template:
       - name: runner
         image: {{ runner_image }}
         command: ["/home/runner/run.sh"]
+        env:
+          - name: JOBS
+            value: "{{ runner_cpus }}"
         resources:
           requests:
             cpu: "500m"

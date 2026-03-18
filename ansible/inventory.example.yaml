@@ -2,6 +2,7 @@ all:
   vars:
     github_org: "is-itmo-c-2X"
     ansible_user: itmo
+    runner_cpus: 2
 
 runners:
   vars:
