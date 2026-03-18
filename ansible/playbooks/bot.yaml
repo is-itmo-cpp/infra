@@ -10,6 +10,7 @@
     container_env:
       BOT_TOKEN: "{{ telegram_token }}"
       GOOGLE_CREDENTIALS_PATH: "/data/credentials.json"
+      GITHUB_CLASSROOM: "{{ github_classroom }}"
       OWNER_IDS: "{{ owner_ids }}"
       USERS_TABLE_ID: "{{ users_table_id }}"
       GITHUB_TOKEN: "{{ github_token }}"

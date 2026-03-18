@@ -24,6 +24,7 @@ bot:
   vars:
     bot_image: ghcr.io/your_org/itmogus-bot:latest
     owner_ids: "123456789,987654321"
+    github_classroom: is-itmo-c-2X-classroom-d34db33f
 
   hosts:
     vm-itmo-bot-1:
