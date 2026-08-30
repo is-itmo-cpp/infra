@@ -1,0 +1,42 @@
+home: mrsobakin
+
+clouds:
+  mrsobakin:
+    cloud_id: yc-folder-id
+
+runners:
+  github_org: is-itmo-c-2X
+  scale_set_name: itmogus
+  image: ghcr.io/is-itmo-cpp/runner:latest
+  jobs: 2
+
+  ssh:
+    user: itmo
+    private_key_file: ~/.ssh/id_itmo_ed25519
+    public_key_file: ~/.ssh/id_itmo_ed25519.pub
+
+  vms:
+    primary-1:
+      cloud: mrsobakin
+      zone: ru-central1-a
+      cores: 4
+      memory: 8
+      max_runners: 2
+      disk_type: network-ssd-nonreplicated
+      disk_size: 93
+      runner_group: Primary-1
+      mode: always
+
+    backup-1:
+      cloud: mrsobakin
+      zone: ru-central1-b
+      cores: 2
+      memory: 4
+      max_runners: 1
+      disk_type: network-ssd-nonreplicated
+      disk_size: 93
+      runner_group: Backup-1
+      mode: scheduled
+      cron_start: "0 10 * * 5"
+      duration_hours: 14
+      tz: Europe/Moscow

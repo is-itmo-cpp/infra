@@ -1,31 +1,34 @@
-.PHONY: all
-all: functions
+TERRAFORM ?= terraform
+YC ?= yc
+
+.PHONY: terraform-init
+terraform-init:
+	$(TERRAFORM) -chdir=terraform init
+
+.PHONY: terraform-plan
+terraform-plan: terraform-init
+	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TERRAFORM) -chdir=terraform plan
+
+.PHONY: terraform-apply
+terraform-apply: terraform-init
+	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TERRAFORM) -chdir=terraform apply
+
+.PHONY: destroy
+destroy: terraform-init
+	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TERRAFORM) -chdir=terraform destroy
+	$(MAKE) clean
 
 .PHONY: ansible-deps
 ansible-deps:
-	ansible-galaxy install -r ansible/requirements.yaml
 	ansible-galaxy collection install -r ansible/requirements.yaml
 
 .PHONY: deploy-runners
-deploy-runners: ansible-deps
-	ansible-playbook -i ansible/inventory.yaml -i ansible/secrets.yaml ansible/playbooks/runners.yaml
-
-.PHONY: deploy-bot
-deploy-bot: ansible-deps
-	ansible-playbook -i ansible/inventory.yaml -i ansible/secrets.yaml ansible/playbooks/bot.yaml
+deploy-runners: terraform-apply ansible-deps
+	ansible-playbook -i generated/ansible-inventory.yaml -i secrets.yaml ansible/playbooks/runners.yaml
 
 .PHONY: deploy
-deploy: deploy-bot deploy-runners
-
-.PHONY: functions
-functions: functions/vm-watch
-
-.PHONY: functions/vm-watch
-functions/vm-watch:
-	mkdir -p dist
-	-rm "dist/$(@F).zip"
-	cd "$@"; 7z a "../../dist/$(@F).zip" * -xr!node_modules
+deploy: deploy-runners
 
 .PHONY: clean
 clean:
-	-rm -rf dist
+	-rm -rf generated

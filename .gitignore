@@ -1,7 +1,10 @@
-inventory.yaml
 secrets.yaml
+infra.yaml
 credentials.json
 node_modules/
-dist/
+generated/
 __pycache__/
 *.pyc
+.terraform/
+*.tfstate*
+*.tfvars

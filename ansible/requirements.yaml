@@ -1,6 +1,2 @@
 collections:
   - name: kubernetes.core
-  - name: community.docker
-roles:
-  - name: geerlingguy.docker
-  - name: geerlingguy.pip
