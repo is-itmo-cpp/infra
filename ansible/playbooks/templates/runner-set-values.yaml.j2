@@ -10,6 +10,15 @@ maxRunners: {{ max_runners }}
 runnerScaleSetName: {{ runner_scale_set_name | quote }}
 runnerGroup: {{ runner_group | quote }}
 
+listenerTemplate:
+  spec:
+    containers:
+      - name: listener
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "128Mi"
+
 template:
   spec:
     containers:
@@ -21,11 +30,13 @@ template:
             value: "{{ runner_jobs }}"
         resources:
           requests:
-            cpu: "500m"
+            # CPU is intentionally overcommitted!!
+            # Reqests guarantee that scheduler will give each pod its share under 100% load,
+            # and it doesn't make sense to limit the CPU while we're at idle.
+            cpu: "1000m"
             memory: "2Gi"
             ephemeral-storage: "4Gi"
           limits:
-            cpu: "2000m"
             memory: "2Gi"
             ephemeral-storage: "4Gi"
         securityContext:

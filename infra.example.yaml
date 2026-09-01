@@ -19,9 +19,9 @@ runners:
     primary-1:
       cloud: mrsobakin
       zone: ru-central1-a
-      cores: 4
-      memory: 8
-      max_runners: 2
+      cores: 10
+      memory: 20
+      max_runners: 8
       disk_type: network-ssd-nonreplicated
       disk_size: 93
       runner_group: Primary-1
@@ -30,9 +30,9 @@ runners:
     backup-1:
       cloud: mrsobakin
       zone: ru-central1-b
-      cores: 2
-      memory: 4
-      max_runners: 1
+      cores: 20
+      memory: 40
+      max_runners: 18
       disk_type: network-ssd-nonreplicated
       disk_size: 93
       runner_group: Backup-1

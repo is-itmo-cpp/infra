@@ -4,11 +4,40 @@
   gather_facts: true
 
   tasks:
+    - name: Check if k3s is already installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/k3s
+      register: k3s_bin
+
+    - name: Create k3s config directory
+      ansible.builtin.file:
+        path: /etc/rancher/k3s
+        state: directory
+        mode: "0755"
+
+    - name: Configure k3s
+      ansible.builtin.copy:
+        dest: /etc/rancher/k3s/config.yaml
+        mode: "0600"
+        content: |
+          disable:
+            - traefik
+            - metrics-server
+          kubelet-arg:
+            - "system-reserved=cpu=500m,memory=512Mi"
+      register: k3s_config
+
     - name: Install k3s
       ansible.builtin.shell: |
         curl -sfL https://get.k3s.io | sh -
       args:
         creates: /usr/local/bin/k3s
+
+    - name: Restart k3s to apply config changes
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+      when: k3s_bin.stat.exists and k3s_config.changed
 
     - name: Install Helm
       ansible.builtin.shell: |
@@ -22,6 +51,11 @@
         chart_ref: "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller"
         release_namespace: "arc-systems"
         create_namespace: true
+        values:
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
         kubeconfig: "/etc/rancher/k3s/k3s.yaml"
         wait: true
 
