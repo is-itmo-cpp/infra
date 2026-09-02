@@ -1,16 +1,16 @@
 # vi: ft=yaml
 
 cluster:
-  name: {{ inventory_hostname | quote }}
+  name: {{ inventory_hostname | string | to_json }}
 
 destinations:
   prometheus:
     type: prometheus
-    url: {{ prometheus_remote_write.url | quote }}
+    url: {{ prometheus_remote_write.url | string | to_json }}
     auth:
       type: basic
-      username: {{ prometheus_remote_write.username | quote }}
-      password: {{ prometheus_remote_write.password | quote }}
+      username: {{ prometheus_remote_write.username | string | to_json }}
+      password: {{ prometheus_remote_write.password | string | to_json }}
 
 # Default allowlists don't fit into free-tier Grafana Cloud
 clusterMetrics:

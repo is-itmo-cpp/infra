@@ -1,14 +1,14 @@
 # vi: ft=yaml
 
 githubConfigSecret:
-  github_token: {{ github_token | quote }}
-githubConfigUrl: {{ github_config_url | quote }}
+  github_token: {{ github_token | string | to_json }}
+githubConfigUrl: {{ github_config_url | string | to_json }}
 
 minRunners: 0
 maxRunners: {{ max_runners }}
 
-runnerScaleSetName: {{ runner_scale_set_name | quote }}
-runnerGroup: {{ runner_group | quote }}
+runnerScaleSetName: {{ runner_scale_set_name | string | to_json }}
+runnerGroup: {{ runner_group | string | to_json }}
 
 listenerTemplate:
   metadata:
