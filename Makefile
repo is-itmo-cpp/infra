@@ -1,33 +1,46 @@
 TERRAFORM ?= terraform
 YC ?= yc
 
-.PHONY: terraform-init
-terraform-init:
-	$(TERRAFORM) -chdir=terraform init
+TF_YC := $(TERRAFORM) -chdir=terraform/yc
+TF_GITHUB := $(TERRAFORM) -chdir=terraform/github
 
-.PHONY: terraform-plan
-terraform-plan: terraform-init
-	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TERRAFORM) -chdir=terraform plan
+.PHONY: yc-init yc-plan yc-apply yc-destroy
+yc-init:
+	$(TF_YC) init
 
-.PHONY: terraform-apply
-terraform-apply: terraform-init
-	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TERRAFORM) -chdir=terraform apply
+yc-plan: yc-init
+	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TF_YC) plan
 
-.PHONY: destroy
-destroy: terraform-init
-	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TERRAFORM) -chdir=terraform destroy
+yc-apply: yc-init
+	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TF_YC) apply
+
+yc-destroy: yc-init
+	@token="$$($(YC) iam create-token)" && YC_TOKEN="$$token" $(TF_YC) destroy
 	$(MAKE) clean
+
+.PHONY: github-init github-plan github-apply
+github-init:
+	$(TF_GITHUB) init
+
+github-plan: github-init
+	$(TF_GITHUB) plan
+
+github-apply: github-init
+	$(TF_GITHUB) apply
 
 .PHONY: ansible-deps
 ansible-deps:
 	ansible-galaxy collection install -r ansible/requirements.yaml
 
 .PHONY: deploy-runners
-deploy-runners: terraform-apply ansible-deps
+deploy-runners: yc-apply github-apply ansible-deps
 	ansible-playbook -i generated/ansible-inventory.yaml -i secrets.yaml ansible/playbooks/runners.yaml
 
 .PHONY: deploy
 deploy: deploy-runners
+
+.PHONY: destroy
+destroy: yc-destroy
 
 .PHONY: clean
 clean:

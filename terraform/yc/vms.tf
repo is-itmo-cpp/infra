@@ -1,5 +1,5 @@
 locals {
-  config = yamldecode(file("${path.module}/../infra.yaml"))
+  config = yamldecode(file("${path.module}/../../infra.yaml"))
 
   home       = local.config.home
   clouds     = local.config.clouds

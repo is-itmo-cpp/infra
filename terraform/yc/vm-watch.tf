@@ -13,8 +13,8 @@ resource "yandex_resourcemanager_folder_iam_member" "vm_watch_compute" {
 
 data "archive_file" "vm_watch" {
   type        = "zip"
-  source_dir  = "${path.module}/../functions/vm-watch"
-  output_path = "${path.module}/../generated/vm-watch.zip"
+  source_dir  = "${path.module}/../../functions/vm-watch"
+  output_path = "${path.module}/../../generated/vm-watch.zip"
   excludes    = ["node_modules", "node_modules/**"]
 }
 

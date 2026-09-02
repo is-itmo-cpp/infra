@@ -1,5 +1,5 @@
 resource "local_file" "ansible_inventory" {
-  filename             = "${path.module}/../generated/ansible-inventory.yaml"
+  filename             = "${path.module}/../../generated/ansible-inventory.yaml"
   directory_permission = "0755"
   file_permission      = "0644"
 

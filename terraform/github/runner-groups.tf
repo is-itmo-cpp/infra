@@ -1,5 +1,9 @@
 locals {
-  secrets = yamldecode(file("${path.module}/../secrets.yaml"))
+  config  = yamldecode(file("${path.module}/../../infra.yaml"))
+  secrets = yamldecode(file("${path.module}/../../secrets.yaml"))
+
+  runners    = local.config.runners
+  runner_vms = local.runners.vms
 }
 
 provider "github" {
