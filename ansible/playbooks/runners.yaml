@@ -56,6 +56,10 @@
             requests:
               cpu: "100m"
               memory: "256Mi"
+          metrics:
+            controllerManagerAddr: ":8080"
+            listenerAddr: ":8080"
+            listenerEndpoint: "/metrics"
         kubeconfig: "/etc/rancher/k3s/k3s.yaml"
         wait: true
 
@@ -66,5 +70,17 @@
         release_namespace: "arc-runners"
         create_namespace: true
         values: "{{ lookup('template', 'runner-set-values.yaml.j2') | from_yaml }}"
+        kubeconfig: "/etc/rancher/k3s/k3s.yaml"
+        wait: true
+
+    - name: Deploy monitoring
+      when: prometheus_remote_write is defined
+      kubernetes.core.helm:
+        name: "grafana-k8s-monitoring"
+        chart_ref: "oci://ghcr.io/grafana/helm-charts/k8s-monitoring"
+        chart_version: "4.5.0"
+        release_namespace: "monitoring"
+        create_namespace: true
+        values: "{{ lookup('template', 'monitoring-values.yaml.j2') | from_yaml }}"
         kubeconfig: "/etc/rancher/k3s/k3s.yaml"
         wait: true

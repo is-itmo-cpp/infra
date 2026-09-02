@@ -11,6 +11,11 @@ runnerScaleSetName: {{ runner_scale_set_name | quote }}
 runnerGroup: {{ runner_group | quote }}
 
 listenerTemplate:
+  metadata:
+    annotations:
+      k8s.grafana.com/scrape: "true"
+      k8s.grafana.com/metrics.portNumber: "8080"
+      k8s.grafana.com/job: "arc-listener"
   spec:
     containers:
       - name: listener
@@ -18,6 +23,36 @@ listenerTemplate:
           requests:
             cpu: "50m"
             memory: "128Mi"
+
+# Remove per-repo/per-job labels
+listenerMetrics:
+  counters:
+    gha_started_jobs_total:
+      labels: ["event_name"]
+    gha_completed_jobs_total:
+      labels: ["event_name", "job_result"]
+  gauges:
+    gha_assigned_jobs:
+      labels: ["name", "namespace"]
+    gha_running_jobs:
+      labels: ["name", "namespace"]
+    gha_registered_runners:
+      labels: ["name", "namespace"]
+    gha_busy_runners:
+      labels: ["name", "namespace"]
+    gha_idle_runners:
+      labels: ["name", "namespace"]
+    gha_desired_runners:
+      labels: ["name", "namespace"]
+    gha_max_runners:
+      labels: ["name", "namespace"]
+  histograms:
+    gha_job_startup_duration_seconds:
+      labels: ["event_name"]
+      buckets: [1, 2, 3, 5, 10, 20, 30, 60, 120, 300, 600]
+    gha_job_execution_duration_seconds:
+      labels: ["event_name"]
+      buckets: [10, 30, 60, 120, 300, 600, 1200, 1800, 3600]
 
 template:
   spec:

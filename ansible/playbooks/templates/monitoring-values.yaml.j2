@@ -1,0 +1,74 @@
+# vi: ft=yaml
+
+cluster:
+  name: {{ inventory_hostname | quote }}
+
+destinations:
+  prometheus:
+    type: prometheus
+    url: {{ prometheus_remote_write.url | quote }}
+    auth:
+      type: basic
+      username: {{ prometheus_remote_write.username | quote }}
+      password: {{ prometheus_remote_write.password | quote }}
+
+# Default allowlists don't fit into free-tier Grafana Cloud
+clusterMetrics:
+  enabled: true
+  kubelet:
+    enabled: false
+  kubeletResource:
+    enabled: false
+  cadvisor:
+    metricsTuning:
+      useDefaultAllowList: false
+      includeNamespaces: [arc-runners]
+      includeMetrics:
+        - container_cpu_usage_seconds_total
+        - container_memory_working_set_bytes
+  kube-state-metrics:
+    metricsTuning:
+      useDefaultAllowList: false
+      includeMetrics:
+        - kube_node_status_allocatable
+        - kube_node_status_condition
+        - kube_pod_info
+        - kube_pod_status_unschedulable
+        - kube_pod_container_resource_requests
+        - kube_pod_container_resource_limits
+        - kube_pod_container_status_restarts_total
+        - kube_pod_container_status_last_terminated_reason
+
+hostMetrics:
+  enabled: true
+  linuxHosts:
+    enabled: true
+    metricsTuning:
+      useDefaultAllowList: false
+      includeMetrics:
+        - node_cpu_seconds_total
+        - node_memory_MemTotal_bytes
+        - node_memory_MemAvailable_bytes
+        - node_filesystem_size_bytes
+        - node_filesystem_avail_bytes
+
+annotationAutodiscovery:
+  enabled: true
+  namespaces: [arc-systems]
+  metricsTuning:
+    includeMetrics: ["gha_.*"]
+
+telemetryServices:
+  kube-state-metrics:
+    deploy: true
+  node-exporter:
+    deploy: true
+
+collectors:
+  alloy-metrics:
+    presets: [clustered]  # required by annotationAutodiscovery
+    alloy:
+      resources:
+        requests:
+          cpu: "25m"
+          memory: "384Mi"
