@@ -36,6 +36,22 @@ data "yandex_vpc_subnet" "default" {
   name      = "default-${each.value.zone}"
 }
 
+# Reserve static public IPs.
+resource "yandex_vpc_address" "runner" {
+  for_each = local.runner_vms
+
+  folder_id = data.yandex_resourcemanager_folder.default[each.value.cloud].id
+  name      = "vm-itmo-ci-${each.key}"
+
+  external_ipv4_address {
+    zone_id = each.value.zone
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "terraform_data" "cloud_init" {
   triggers_replace = local.cloud_init
 }
@@ -66,8 +82,9 @@ resource "yandex_compute_instance" "runner" {
   }
 
   network_interface {
-    subnet_id = data.yandex_vpc_subnet.default[each.key].id
-    nat       = true
+    subnet_id      = data.yandex_vpc_subnet.default[each.key].id
+    nat            = true
+    nat_ip_address = yandex_vpc_address.runner[each.key].external_ipv4_address[0].address
   }
 
   metadata = {
