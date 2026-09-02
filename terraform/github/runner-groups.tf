@@ -14,7 +14,7 @@ provider "github" {
 resource "github_actions_runner_group" "runner" {
   for_each = local.runner_vms
 
-  name                       = each.value.runner_group
+  name                       = each.key
   visibility                 = "all"
   allows_public_repositories = true
 }

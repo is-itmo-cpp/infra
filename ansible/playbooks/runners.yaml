@@ -20,6 +20,7 @@
         dest: /etc/rancher/k3s/config.yaml
         mode: "0600"
         content: |
+          node-name: {{ inventory_hostname }}
           disable:
             - traefik
             - metrics-server

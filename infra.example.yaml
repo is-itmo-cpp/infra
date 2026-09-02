@@ -24,7 +24,6 @@ runners:
       max_runners: 8
       disk_type: network-ssd-nonreplicated
       disk_size: 93
-      runner_group: Primary-1
       mode: always
 
     backup-1:
@@ -35,7 +34,6 @@ runners:
       max_runners: 18
       disk_type: network-ssd-nonreplicated
       disk_size: 93
-      runner_group: Backup-1
       mode: scheduled
       cron_start: "0 10 * * 5"
       duration_hours: 14

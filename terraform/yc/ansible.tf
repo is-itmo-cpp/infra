@@ -14,9 +14,8 @@ resource "local_file" "ansible_inventory" {
         github_config_url            = "https://github.com/${local.runners.github_org}"
       }
       hosts = {
-        for name, vm in local.runner_vms : "vm-itmo-ci-${name}" => {
+        for name, vm in local.runner_vms : name => {
           ansible_host = yandex_compute_instance.runner[name].network_interface[0].nat_ip_address
-          runner_group = vm.runner_group
           max_runners  = vm.max_runners
         }
       }

@@ -8,7 +8,7 @@ minRunners: 0
 maxRunners: {{ max_runners }}
 
 runnerScaleSetName: {{ runner_scale_set_name | string | to_json }}
-runnerGroup: {{ runner_group | string | to_json }}
+runnerGroup: {{ inventory_hostname | string | to_json }}
 
 listenerTemplate:
   metadata:

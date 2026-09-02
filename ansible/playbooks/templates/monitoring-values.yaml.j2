@@ -6,6 +6,7 @@ cluster:
 destinations:
   prometheus:
     type: prometheus
+    clusterLabels: [node]
     url: {{ prometheus_remote_write.url | string | to_json }}
     auth:
       type: basic
