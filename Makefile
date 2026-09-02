@@ -3,6 +3,7 @@ YC ?= yc
 
 TF_YC := $(TERRAFORM) -chdir=terraform/yc
 TF_GITHUB := $(TERRAFORM) -chdir=terraform/github
+TF_GRAFANA := $(TERRAFORM) -chdir=terraform/grafana
 
 .PHONY: yc-init yc-plan yc-apply yc-destroy
 yc-init:
@@ -27,6 +28,16 @@ github-plan: github-init
 
 github-apply: github-init
 	$(TF_GITHUB) apply
+
+.PHONY: grafana-init grafana-plan grafana-apply
+grafana-init:
+	$(TF_GRAFANA) init
+
+grafana-plan: grafana-init
+	$(TF_GRAFANA) plan
+
+grafana-apply: grafana-init
+	$(TF_GRAFANA) apply
 
 .PHONY: ansible-deps
 ansible-deps:
